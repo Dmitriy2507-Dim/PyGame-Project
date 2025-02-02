@@ -25,7 +25,8 @@ current_screen = 0  # 0 - приветствие, 1 - игра
 user_score = 0
 computer_score = 0
 level = 1
-game_state = "playing"  # "playing", "game_over", "game_win"
+game_state = "playing"  # "playing", "game_over", "game_win", "all_levels_completed"
+max_level = 3
 
 
 # Кнопка
@@ -46,7 +47,7 @@ initial_computer_rect_x = WIDTH // 2 - 50
 initial_computer_rect_y = 30
 
 # Скорость верхнего прямоугольника
-computer_rect_speed = 4
+computer_rect_speed = 3
 
 # Квадрат
 square_size = 20
@@ -201,6 +202,7 @@ def game_screen():
     elif computer_score == 3:
         game_state = "game_over"
 
+
 def game_end_screen():
     """Отображение экрана окончания игры и обработка выбора."""
     global game_state, level, user_score, computer_score, current_screen
@@ -245,20 +247,48 @@ def game_end_screen():
         pygame.time.Clock().tick(30)
 
 
+def all_levels_completed_screen():
+    """Отображает экран после прохождения всех уровней."""
+    global current_screen, game_state
+    screen.fill(BLACK)
+    text = font.render("Поздравляем! Вы прошли все 3 уровня игры", True, WHITE)
+    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 3))
+    screen.blit(text, text_rect)
+    options = ["Закрыть игру"]  # Оставляем только одну опцию
+
+    # Создаем кнопку
+    button_text = font.render(options[0], True, BLACK)
+    button_rect = button_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50)) # Позиционируем кнопку
+    pygame.draw.rect(screen, WHITE, button_rect.inflate(20, 10))
+    screen.blit(button_text, button_rect)
+
+    pygame.display.flip()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return "Закрыть игру"
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if button_rect.collidepoint(mouse_pos):
+                    return "Закрыть игру"  # Возвращаем "close_game" если нажата кнопка
+
+        pygame.time.Clock().tick(30)
+
+
 def win_screen():
     """Отрисовка экрана победы."""
-    global game_state, current_screen
+    global game_state, current_screen, level
     chosen_option = game_end_screen()
     if chosen_option == "Играть снова":
         restart_game()
         current_screen = 1
     elif chosen_option == "Следующий уровень":
         start_next_level()
-        current_screen = 1
     elif chosen_option == "Закрыть игру":
         pygame.quit()
         sys.exit()
-
 
 def lose_screen():
     """Отрисовка экрана поражения."""
@@ -274,18 +304,21 @@ def lose_screen():
 
 def start_next_level():
     """Увеличение скорости и переход на следующий уровень."""
-    global level, square_speed_x, square_speed_y, computer_rect_speed, game_state
-    level += 1
-    square_speed_x *= 1.2  # Увеличение скорости
-    square_speed_y *= 1.2
-    computer_rect_speed *= 1.2
-    game_state = "playing"  # Переключение в состояние "игра"
-    restart_game()
+    global level, square_speed_x, square_speed_y, computer_rect_speed, game_state, max_level
+    if level < max_level:
+        level += 1
+        square_speed_x *= 1.2  # Увеличение скорости
+        square_speed_y *= 1.2
+        computer_rect_speed *= 1.2
+        game_state = "playing"  # Переключение в состояние "игра"
+        restart_game()
+    else:
+        game_state = "all_levels_completed"
 
 
 def restart_game():
     """Сброс параметров игры."""
-    global user_score, computer_score, square_rect, square_speed_x, square_speed_y, computer_rect, game_state, particles
+    global user_score, computer_score, square_rect, square_speed_x, square_speed_y, computer_rect, game_state, particles, level
     global initial_square_speed_x, initial_square_speed_y, initial_computer_rect_x, initial_computer_rect_y
     user_score = 0
     computer_score = 0
@@ -297,7 +330,6 @@ def restart_game():
     computer_rect.y = initial_computer_rect_y
     game_state = "playing"
     particles = []  # Очищаем частицы
-
 
 # Основной цикл игры
 running = True
@@ -318,8 +350,11 @@ while running:
             lose_screen()
         elif game_state == "game_win":
             win_screen()
+        elif game_state == "all_levels_completed":
+            all_levels_completed_screen()
 
     pygame.time.delay(20)
 
 pygame.quit()
 sys.exit()
+
