@@ -1,4 +1,3 @@
-
 import pygame
 import sys
 import random
@@ -22,7 +21,7 @@ BLUE = (0, 0, 255)
 font = pygame.font.Font(None, 36)
 
 # Общие переменные
-current_screen = 0  # 0 - приветствие, 1 - игра, 2 - победа, 3 - проигрыш
+current_screen = 0  # 0 - приветствие, 1 - игра
 user_score = 0
 computer_score = 0
 level = 1
@@ -106,7 +105,7 @@ def game_screen():
     global computer_rect_speed, square_speed_x, square_speed_y, user_score, computer_score
     global initial_square_speed_x, initial_square_speed_y
     global initial_user_rect_x, initial_user_rect_y, initial_computer_rect_x, initial_computer_rect_y, particles, current_screen, game_state
-    
+
     # Обработка управления нижним прямоугольником
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
@@ -198,7 +197,7 @@ def game_screen():
 
     # Проверка счета и переключение на новый экран
     if user_score == 3:
-         game_state = "game_win"
+        game_state = "game_win"
     elif computer_score == 3:
         game_state = "game_over"
 
@@ -207,12 +206,16 @@ def game_end_screen():
     global game_state, level, user_score, computer_score, current_screen
     screen.fill(BLACK)
     if game_state == "game_over":
-        text = font.render(f"Game Over! Level: {level}, User Score: {user_score}, Computer Score: {computer_score}", True, WHITE)
+        text = font.render(
+            f"Game Over! Level: {level}, User Score: {user_score}, Computer Score: {computer_score}",
+            True, WHITE)
         text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 3))
         screen.blit(text, text_rect)
         options = ["Играть снова", "Закрыть игру"]
     elif game_state == "game_win":
-        text = font.render(f"You Win! Level: {level}, User Score: {user_score}, Computer Score: {computer_score}", True, WHITE)
+        text = font.render(
+            f"You Win! Level: {level}, User Score: {user_score}, Computer Score: {computer_score}",
+            True, WHITE)
         text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 3))
         screen.blit(text, text_rect)
         options = ["Играть снова", "Следующий уровень", "Закрыть игру"]
@@ -232,7 +235,7 @@ def game_end_screen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                return "close_game"
+                return "Закрыть игру"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 for rect, option in buttons:
@@ -240,6 +243,7 @@ def game_end_screen():
                         return option
 
         pygame.time.Clock().tick(30)
+
 
 def win_screen():
     """Отрисовка экрана победы."""
@@ -249,9 +253,9 @@ def win_screen():
         restart_game()
         current_screen = 1
     elif chosen_option == "Следующий уровень":
-      start_next_level()
-      current_screen = 1
-    elif chosen_option == "close_game":
+        start_next_level()
+        current_screen = 1
+    elif chosen_option == "Закрыть игру":
         pygame.quit()
         sys.exit()
 
@@ -263,9 +267,10 @@ def lose_screen():
     if chosen_option == "Играть снова":
         restart_game()
         current_screen = 1
-    elif chosen_option == "close_game":
+    elif chosen_option == "Закрыть игру":
         pygame.quit()
         sys.exit()
+
 
 def start_next_level():
     """Увеличение скорости и переход на следующий уровень."""
@@ -293,6 +298,7 @@ def restart_game():
     game_state = "playing"
     particles = []  # Очищаем частицы
 
+
 # Основной цикл игры
 running = True
 while running:
@@ -302,15 +308,15 @@ while running:
         if current_screen == 0 and event.type == pygame.MOUSEBUTTONDOWN:
             if button_rect.collidepoint(event.pos):
                 current_screen = 1
-                
+
     if current_screen == 0:
         welcome_screen()
     elif current_screen == 1:
-         if game_state == "playing":
-             game_screen()
-         elif game_state == "game_over":
-             lose_screen()
-         elif game_state == "game_win":
+        if game_state == "playing":
+            game_screen()
+        elif game_state == "game_over":
+            lose_screen()
+        elif game_state == "game_win":
             win_screen()
 
     pygame.time.delay(20)
