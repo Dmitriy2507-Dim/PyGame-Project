@@ -16,6 +16,8 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+YELLOW = (255, 255, 0)
 
 # Шрифт
 font = pygame.font.Font(None, 36)
@@ -89,7 +91,7 @@ def create_particles(x, y):
 
 def welcome_screen():
     """Отрисовка приветственного экрана."""
-    screen.fill(BLACK)
+    screen.fill(BLUE)
     text = font.render("Добро пожаловать!", True, WHITE)
     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
     screen.blit(text, text_rect)
@@ -206,18 +208,19 @@ def game_screen():
 def game_end_screen():
     """Отображение экрана окончания игры и обработка выбора."""
     global game_state, level, user_score, computer_score, current_screen
-    screen.fill(BLACK)
     if game_state == "game_over":
+        screen.fill(RED)
         text = font.render(
             f"Game Over! Level: {level}, User Score: {user_score}, Computer Score: {computer_score}",
-            True, WHITE)
+            True, BLACK)
         text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 3))
         screen.blit(text, text_rect)
         options = ["Играть снова", "Закрыть игру"]
     elif game_state == "game_win":
+        screen.fill(GREEN)
         text = font.render(
             f"You Win! Level: {level}, User Score: {user_score}, Computer Score: {computer_score}",
-            True, WHITE)
+            True, BLACK)
         text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 3))
         screen.blit(text, text_rect)
         options = ["Играть снова", "Следующий уровень", "Закрыть игру"]
@@ -250,8 +253,8 @@ def game_end_screen():
 def all_levels_completed_screen():
     """Отображает экран после прохождения всех уровней."""
     global current_screen, game_state
-    screen.fill(BLACK)
-    text = font.render("Поздравляем! Вы прошли все 3 уровня игры", True, WHITE)
+    screen.fill(YELLOW)
+    text = font.render("Поздравляем! Вы прошли все 3 уровня игры", True, BLACK)
     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 3))
     screen.blit(text, text_rect)
     options = ["Закрыть игру"]  # Оставляем только одну опцию
@@ -280,6 +283,7 @@ def all_levels_completed_screen():
 def win_screen():
     """Отрисовка экрана победы."""
     global game_state, current_screen, level
+    screen.fill(GREEN)
     chosen_option = game_end_screen()
     if chosen_option == "Играть снова":
         restart_game()
@@ -293,6 +297,7 @@ def win_screen():
 def lose_screen():
     """Отрисовка экрана поражения."""
     global game_state, current_screen
+    screen.fill(RED)
     chosen_option = game_end_screen()
     if chosen_option == "Играть снова":
         restart_game()
