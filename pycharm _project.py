@@ -2,7 +2,6 @@ import pygame
 import sys
 import random
 
-# Инициализация Pygame
 pygame.init()
 
 # Размеры окна
@@ -90,7 +89,7 @@ def create_particles(x, y):
 
 
 def welcome_screen():
-    """Отрисовка приветственного экрана."""
+    #Отрисовка начального экрана.
     screen.fill(BLUE)
     text = font.render("Добро пожаловать!", True, WHITE)
     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
@@ -104,7 +103,7 @@ def welcome_screen():
 
 
 def game_screen():
-    """Отрисовка игрового экрана и логика игры."""
+    #Отрисовка игрового экрана.
     global computer_rect_speed, square_speed_x, square_speed_y, user_score, computer_score
     global initial_square_speed_x, initial_square_speed_y
     global initial_user_rect_x, initial_user_rect_y, initial_computer_rect_x, initial_computer_rect_y, particles, current_screen, game_state
@@ -206,7 +205,7 @@ def game_screen():
 
 
 def game_end_screen():
-    """Отображение экрана окончания игры и обработка выбора."""
+    #Отображение экрана окончания игры.
     global game_state, level, user_score, computer_score, current_screen
     if game_state == "game_over":
         screen.fill(RED)
@@ -251,7 +250,7 @@ def game_end_screen():
 
 
 def all_levels_completed_screen():
-    """Отображает экран после прохождения всех уровней."""
+    #Отображает экран после прохождения всех уровней.
     global current_screen, game_state
     screen.fill(YELLOW)
     text = font.render("Поздравляем! Вы прошли все 3 уровня игры", True, BLACK)
@@ -281,7 +280,7 @@ def all_levels_completed_screen():
 
 
 def win_screen():
-    """Отрисовка экрана победы."""
+    #Отрисовка экрана win.
     global game_state, current_screen, level
     screen.fill(GREEN)
     chosen_option = game_end_screen()
@@ -295,7 +294,7 @@ def win_screen():
         sys.exit()
 
 def lose_screen():
-    """Отрисовка экрана поражения."""
+    #Отрисовка экрана lose.
     global game_state, current_screen
     screen.fill(RED)
     chosen_option = game_end_screen()
@@ -308,7 +307,7 @@ def lose_screen():
 
 
 def start_next_level():
-    """Увеличение скорости и переход на следующий уровень."""
+    #Увеличение скорости и переход на следующий уровень.
     global level, square_speed_x, square_speed_y, computer_rect_speed, game_state, max_level
     if level < max_level:
         level += 1
@@ -322,7 +321,7 @@ def start_next_level():
 
 
 def restart_game():
-    """Сброс параметров игры."""
+    #Сброс параметров игры.
     global user_score, computer_score, square_rect, square_speed_x, square_speed_y, computer_rect, game_state, particles, level
     global initial_square_speed_x, initial_square_speed_y, initial_computer_rect_x, initial_computer_rect_y
     user_score = 0
@@ -362,4 +361,5 @@ while running:
 
 pygame.quit()
 sys.exit()
+
 
