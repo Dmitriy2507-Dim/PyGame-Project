@@ -10,7 +10,7 @@ HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Игра Pygame")
 
-# Цвета
+# Цвета, которые используются в игре
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -18,50 +18,48 @@ BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 
-# Шрифт
+# Шрифт, который используется в игре
 font = pygame.font.Font(None, 36)
 
-# Общие переменные
+# Переменные, которые используются в игре
 current_screen = 0  # 0 - приветствие, 1 - игра
 user_score = 0
 computer_score = 0
 level = 1
-game_state = "playing"  # "playing", "game_over", "game_win", "all_levels_completed"
+game_state = "playing"
 max_level = 3
 
 
 # Кнопка
 button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 25, 200, 50)
-# Изменен размер кнопки, для фразы "Играть снова"
 restart_button_rect = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 50, 200, 50)
-# Изменено положение кнопки "Выйти", она теперь находится ровно под "Играть снова"
 exit_button_rect = pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 120, 200, 50)
 
 # Прямоугольники
 user_rect = pygame.Rect(WIDTH // 2 - 50, HEIGHT - 50, 100, 20)
 computer_rect = pygame.Rect(WIDTH // 2 - 50, 30, 100, 20)
 
-# Исходные позиции прямоугольников
+# Начальные позиции прямоугольников
 initial_user_rect_x = WIDTH // 2 - 50
 initial_user_rect_y = HEIGHT - 50
 initial_computer_rect_x = WIDTH // 2 - 50
 initial_computer_rect_y = 30
 
-# Скорость верхнего прямоугольника
+# Скорость верхнего прямоугольника (под управлением компьютера)
 computer_rect_speed = 3
 
-# Квадрат
+# Квадрат (тоесть мяч)
 square_size = 20
 square_rect = pygame.Rect(WIDTH // 2 - square_size // 2, HEIGHT // 2 - square_size // 2, square_size, square_size)
 
-# Исходные скорости квадрата
+# Исходные скорости квадрата (мяча)
 initial_square_speed_x = 3
 initial_square_speed_y = 3
 square_speed_x = initial_square_speed_x
 square_speed_y = initial_square_speed_y
 
 
-# Эффект рассыпания
+# Эффект рассыпания при касании мяча со стенкой
 class Particle:
     def __init__(self, x, y):
         self.x = x
@@ -69,7 +67,7 @@ class Particle:
         self.size = random.randint(2, 5)
         self.speed_x = random.uniform(-2, 2)
         self.speed_y = random.uniform(-2, 2)
-        self.lifetime = 20  # Количество кадров жизни частицы
+        self.lifetime = 20  # Количество кадров "жизни" частицы
 
     def update(self):
         self.x += self.speed_x
@@ -84,7 +82,7 @@ particles = []
 
 
 def create_particles(x, y):
-    for _ in range(30):  # Создаем 30 частиц для эффекта
+    for _ in range(30):  # Создаем 30 частиц для эффекта рассыпания
         particles.append(Particle(x, y))
 
 
@@ -123,7 +121,7 @@ def game_screen():
     # Очистка экрана
     screen.fill(BLACK)
 
-    # Движение верхнего прямоугольника (теперь подстраивается под квадрат)
+    # Движение верхнего прямоугольника
     if square_rect.centerx < computer_rect.centerx:
         computer_rect.x -= computer_rect_speed
     elif square_rect.centerx > computer_rect.centerx:
@@ -135,11 +133,11 @@ def game_screen():
     if computer_rect.right > WIDTH:
         computer_rect.right = WIDTH
 
-    # Движение квадрата
+    # Движение квадрата (мяча)
     square_rect.x += square_speed_x
     square_rect.y += square_speed_y
 
-    # Обработка столкновений квадрата со стенами и создание частиц
+    # Обработка столкновений квадрата (мяча) со стенами и создание частиц (класс Particle)
     if square_rect.left < 0:
         create_particles(square_rect.left, square_rect.centery)
         square_speed_x *= -1
@@ -147,19 +145,19 @@ def game_screen():
         create_particles(square_rect.right, square_rect.centery)
         square_speed_x *= -1
 
-    # Обработка столкновений с прямоугольниками - отскок и ускорение
+    # Обработка столкновений с прямоугольниками - отскок и ускорение квадрата (мяча)
     if square_rect.colliderect(user_rect) or square_rect.colliderect(computer_rect):
         square_speed_y *= -1
-        square_speed_x *= 1.1  # Уменьшено ускорение, чтобы не вылетало за границы
+        square_speed_x *= 1.1
         square_speed_y *= 1.1
 
-    # Выход за границы (считаем очки и сбрасываем скорость)
+    # Выход за границы = гол
     if square_rect.top > HEIGHT:
         computer_score += 1
         square_rect.center = (WIDTH // 2, HEIGHT // 2)
         square_speed_x = random.choice([-initial_square_speed_x, initial_square_speed_x])
         square_speed_y = -initial_square_speed_y
-        # Возвращение прямоугольников в исходные позиции
+        # Возвращение прямоугольников в исходные позиции когда кто-то забил гол
         user_rect.x = initial_user_rect_x
         user_rect.y = initial_user_rect_y
         computer_rect.x = initial_computer_rect_x
@@ -170,7 +168,7 @@ def game_screen():
         square_rect.center = (WIDTH // 2, HEIGHT // 2)
         square_speed_x = random.choice([-initial_square_speed_x, initial_square_speed_x])
         square_speed_y = initial_square_speed_y
-        # Возвращение прямоугольников в исходные позиции
+        # Возвращение прямоугольников в исходные позиции когда кто-то забил гол
         user_rect.x = initial_user_rect_x
         user_rect.y = initial_user_rect_y
         computer_rect.x = initial_computer_rect_x
@@ -197,7 +195,7 @@ def game_screen():
 
     pygame.display.flip()
 
-    # Проверка счета и переключение на новый экран
+    # Проверка счета и переключение на новый экран (поражение или победа)
     if user_score == 3:
         game_state = "game_win"
     elif computer_score == 3:
@@ -224,14 +222,14 @@ def game_end_screen():
         screen.blit(text, text_rect)
         options = ["Играть снова", "Следующий уровень", "Закрыть игру"]
 
-    # Создаем кнопки (упрощенно)
+    # Создаем кнопки
     buttons = []
     for i, option in enumerate(options):
         button_text = font.render(option, True, BLACK)
         button_rect = button_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50 * (i + 1)))
-        pygame.draw.rect(screen, WHITE, button_rect.inflate(20, 10))  # Нарисовали фон кнопки
+        pygame.draw.rect(screen, WHITE, button_rect.inflate(20, 10))
         screen.blit(button_text, button_rect)
-        buttons.append((button_rect, option))  # Сохранили кнопку и опцию
+        buttons.append((button_rect, option))
 
     pygame.display.flip()
 
@@ -250,17 +248,16 @@ def game_end_screen():
 
 
 def all_levels_completed_screen():
-    #Отображает экран после прохождения всех уровней.
-    global current_screen, game_state
-    screen.fill(YELLOW)
-    text = font.render("Поздравляем! Вы прошли все 3 уровня игры", True, BLACK)
+    """Отображает экран после прохождения всех уровней."""
+    screen.fill(YELLOW)  # Устанавливаем желтый фон
+    text = font.render("Поздравляем! Вы прошли все 3 уровня игры", True, WHITE)
     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 3))
     screen.blit(text, text_rect)
-    options = ["Закрыть игру"]  # Оставляем только одну опцию
+    options = ["Закрыть игру"]
 
     # Создаем кнопку
     button_text = font.render(options[0], True, BLACK)
-    button_rect = button_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50)) # Позиционируем кнопку
+    button_rect = button_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
     pygame.draw.rect(screen, WHITE, button_rect.inflate(20, 10))
     screen.blit(button_text, button_rect)
 
@@ -270,12 +267,12 @@ def all_levels_completed_screen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                return "Закрыть игру"
+                sys.exit()  # Выход из игры
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 if button_rect.collidepoint(mouse_pos):
-                    return "Закрыть игру"  # Возвращаем "close_game" если нажата кнопка
-
+                    pygame.quit()
+                    sys.exit()  # Выход из игры
         pygame.time.Clock().tick(30)
 
 
@@ -361,5 +358,3 @@ while running:
 
 pygame.quit()
 sys.exit()
-
-
